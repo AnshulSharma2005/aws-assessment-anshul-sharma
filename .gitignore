@@ -1,12 +1,12 @@
-# Terraform files
+# Terraform
 **/.terraform/*
 **/.terraform.lock.hcl
 **/terraform.tfstate
 **/terraform.tfstate.backup
 
-# OS files
+# OS junk
 .DS_Store
 Thumbs.db
 
-# Editor files
+# Editor
 .vscode/
