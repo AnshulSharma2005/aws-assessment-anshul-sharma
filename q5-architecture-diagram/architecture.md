@@ -1,0 +1,5 @@
+The architecture uses an internet-facing Application Load Balancer to distribute web traffic across an Auto Scaling Group of stateless EC2 instances deployed in private subnets across multiple AZs. Public subnets host the ALB and NAT gateways, while private subnets host the application tier and the database tier for better security. An Amazon RDS/Aurora database is deployed in a Multi-AZ configuration to handle relational data with automatic failover. ElastiCache (Redis) is added as an in-memory cache layer to offload frequent reads from the database and improve performance for 10,000 concurrent users. Security Groups and NACLs tightly control traffic between layers, and AWS WAF protects the ALB against common web attacks. CloudWatch and CloudWatch Logs collect metrics and logs across the stack for observability, and optional SNS notifications can alert on critical alarms.
+
+Diagram (mermaid you can import into draw.io / diagrams.net)
+
+In diagrams.net, you can create a diagram manually based on the description below, or use this mermaid snippet (diagrams.net supports mermaid):

@@ -1,0 +1,39 @@
+flowchart LR
+  subgraph Internet
+    user[Users]
+  end
+
+  subgraph Public_Subnets
+    alb[ALB<br/>Anshul_Sharma_alb]
+    waf[WAF (optional)]
+    nat[NAT Gateways]
+  end
+
+  subgraph Private_App_Subnets
+    asg[Auto Scaling Group<br/>EC2 App Instances]
+    cache[ElastiCache Redis]
+  end
+
+  subgraph Private_DB_Subnets
+    rds[(RDS/Aurora Multi-AZ)]
+  end
+
+  subgraph Observability
+    cw[CloudWatch Metrics]
+    logs[CloudWatch Logs]
+    sns[SNS Alerts]
+  end
+
+  user --> waf --> alb
+  alb --> asg
+  asg --> cache
+  asg --> rds
+  cache --> rds
+
+  asg --> nat
+  nat --> Internet
+
+  asg --> cw
+  asg --> logs
+  rds --> cw
+  cw --> sns
