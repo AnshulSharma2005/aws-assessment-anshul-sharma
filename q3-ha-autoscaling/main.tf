@@ -13,51 +13,64 @@ provider "aws" {
   region = var.region
 }
 
+############################
+# VARIABLES (FROM Q1)
+############################
+
 variable "region" {
-  type        = string
-  default     = "ap-south-1"
-  description = "Region"
+  default = "ap-south-1"
 }
 
 variable "vpc_id" {
-  type        = string
-  description = "Existing VPC ID from Q1"
+  default = "vpc-0f50c694b5d9a253b"
 }
 
 variable "public_subnet_ids" {
-  type        = list(string)
-  description = "Public subnet IDs from Q1 for ALB"
+  type    = list(string)
+  default = [
+    "subnet-0adc778612111f3e0",
+    "subnet-06553c08cba504aab"
+  ]
 }
 
 variable "private_subnet_ids" {
-  type        = list(string)
-  description = "Private subnet IDs from Q1 for ASG"
+  type    = list(string)
+  default = [
+    "subnet-04a4cf2a70064d816",
+    "subnet-0b1fcdcb66244f693"
+  ]
 }
 
 variable "key_name" {
-  type        = string
-  description = "Existing EC2 key pair"
+  default = "anshul-keypair"
 }
 
 locals {
   name_prefix = "Anshul_Sharma"
 }
 
-data "aws_ami" "amazon_linux" {
+############################
+# AMI
+############################
+
+data "aws_ami" "amazon_linux2" {
   most_recent = true
   owners      = ["amazon"]
 
   filter {
     name   = "name"
-    values = ["al2023-ami-*-x86_64"]
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
   }
 }
 
-# Security group for ALB
+############################
+# SECURITY GROUPS
+############################
+
+# ✅ ALB Security Group
 resource "aws_security_group" "alb_sg" {
-  name        = "${locals.name_prefix}_alb_sg"
-  description = "ALB security group"
-  vpc_id      = var.vpc_id
+  name   = "${local.name_prefix}_alb_sg"
+  vpc_id = var.vpc_id
 
   ingress {
     from_port   = 80
@@ -74,31 +87,28 @@ resource "aws_security_group" "alb_sg" {
   }
 
   tags = {
-    Name = "${locals.name_prefix}_alb_sg"
+    Name = "${local.name_prefix}_alb_sg"
   }
 }
 
-# Security group for EC2 instances
-resource "aws_security_group" "app_sg" {
-  name        = "${locals.name_prefix}_app_sg"
-  description = "App instances SG (only ALB can reach them)"
-  vpc_id      = var.vpc_id
+# ✅ EC2 Security Group
+resource "aws_security_group" "ec2_sg" {
+  name   = "${local.name_prefix}_asg_ec2_sg"
+  vpc_id = var.vpc_id
 
   ingress {
-    description     = "HTTP from ALB"
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
     security_groups = [aws_security_group.alb_sg.id]
   }
 
-  # Optional SSH for debugging from your IP range (keep closed in production)
-  # ingress {
-  #   from_port   = 22
-  #   to_port     = 22
-  #   protocol    = "tcp"
-  #   cidr_blocks = ["YOUR_IP/32"]
-  # }
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   egress {
     from_port   = 0
@@ -108,46 +118,50 @@ resource "aws_security_group" "app_sg" {
   }
 
   tags = {
-    Name = "${locals.name_prefix}_app_sg"
+    Name = "${local.name_prefix}_asg_ec2_sg"
   }
 }
 
-# Target group
-resource "aws_lb_target_group" "tg" {
-  name     = "${locals.name_prefix}-tg"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = var.vpc_id
+############################
+# ✅ LOAD BALANCER (NO UNDERSCORES!)
+############################
 
-  health_check {
-    path                = "/"
-    protocol            = "HTTP"
-    matcher             = "200-399"
-    interval            = 30
-    timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-  }
-
-  tags = {
-    Name = "${locals.name_prefix}_tg"
-  }
-}
-
-# ALB
 resource "aws_lb" "alb" {
-  name               = "${locals.name_prefix}-alb"
+  name               = "anshul-sharma-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
   subnets            = var.public_subnet_ids
 
   tags = {
-    Name = "${locals.name_prefix}_alb"
+    Name = "${local.name_prefix}_alb"
   }
 }
 
-resource "aws_lb_listener" "http" {
+############################
+# ✅ TARGET GROUP (NO UNDERSCORES!)
+############################
+
+resource "aws_lb_target_group" "tg" {
+  name     = "anshul-sharma-tg"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = var.vpc_id
+
+  health_check {
+    path = "/"
+  }
+
+  tags = {
+    Name = "${local.name_prefix}_tg"
+  }
+}
+
+############################
+# LISTENER
+############################
+
+resource "aws_lb_listener" "listener" {
   load_balancer_arn = aws_lb.alb.arn
   port              = 80
   protocol          = "HTTP"
@@ -158,54 +172,61 @@ resource "aws_lb_listener" "http" {
   }
 }
 
-# Launch template for app instances
-resource "aws_launch_template" "app_lt" {
-  name_prefix   = "${locals.name_prefix}_lt_"
-  image_id      = data.aws_ami.amazon_linux.id
-  instance_type = "t2.micro"
+############################
+# LAUNCH TEMPLATE
+############################
+
+resource "aws_launch_template" "lt" {
+  name_prefix   = "${local.name_prefix}_lt"
+  image_id      = data.aws_ami.amazon_linux2.id
+  instance_type = "t3.micro"
   key_name      = var.key_name
 
-  vpc_security_group_ids = [aws_security_group.app_sg.id]
+  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
 
-  user_data = base64encode(file("${path.module}/user_data.sh"))
+  user_data = filebase64("${path.module}/user_data.sh")
 
   tag_specifications {
     resource_type = "instance"
 
     tags = {
-      Name = "${locals.name_prefix}_app_instance"
+      Name = "${local.name_prefix}_asg_instance"
     }
   }
 }
 
-# Auto Scaling Group
+############################
+# AUTO SCALING GROUP
+############################
+
 resource "aws_autoscaling_group" "asg" {
-  name                      = "${locals.name_prefix}_asg"
-  max_size                  = 3
-  min_size                  = 1
-  desired_capacity          = 2
-  vpc_zone_identifier       = var.private_subnet_ids
-  health_check_type         = "EC2"
-  health_check_grace_period = 90
+  desired_capacity = 2
+  max_size         = 3
+  min_size         = 2
+
+  vpc_zone_identifier = var.private_subnet_ids
+  target_group_arns   = [aws_lb_target_group.tg.arn]
 
   launch_template {
-    id      = aws_launch_template.app_lt.id
+    id      = aws_launch_template.lt.id
     version = "$Latest"
   }
 
-  target_group_arns = [aws_lb_target_group.tg.arn]
-
   tag {
     key                 = "Name"
-    value               = "${locals.name_prefix}_asg_instance"
+    value               = "${local.name_prefix}_asg_instance"
     propagate_at_launch = true
-  }
-
-  lifecycle {
-    create_before_destroy = true
   }
 }
 
+############################
+# OUTPUTS
+############################
+
 output "alb_dns_name" {
   value = aws_lb.alb.dns_name
+}
+
+output "asg_name" {
+  value = aws_autoscaling_group.asg.name
 }
