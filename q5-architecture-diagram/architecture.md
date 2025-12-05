@@ -1,5 +1,18 @@
-The architecture uses an internet-facing Application Load Balancer to distribute web traffic across an Auto Scaling Group of stateless EC2 instances deployed in private subnets across multiple AZs. Public subnets host the ALB and NAT gateways, while private subnets host the application tier and the database tier for better security. An Amazon RDS/Aurora database is deployed in a Multi-AZ configuration to handle relational data with automatic failover. ElastiCache (Redis) is added as an in-memory cache layer to offload frequent reads from the database and improve performance for 10,000 concurrent users. Security Groups and NACLs tightly control traffic between layers, and AWS WAF protects the ALB against common web attacks. CloudWatch and CloudWatch Logs collect metrics and logs across the stack for observability, and optional SNS notifications can alert on critical alarms.
+# Q5 – Scalable Web Application Architecture (draw.io)
 
-Diagram (mermaid you can import into draw.io / diagrams.net)
+---
 
-In diagrams.net, you can create a diagram manually based on the description below, or use this mermaid snippet (diagrams.net supports mermaid):
+## 📌 Architecture Explanation
+This architecture supports **10,000 concurrent users** using scalable AWS services.  
+Traffic enters through **Route53 + ALB**, then hits an **Auto Scaling Group** across multiple AZs.  
+Private subnets host the backend and RDS database.  
+Redis (ElastiCache) improves performance and reduces DB load.  
+AWS WAF provides security, while CloudWatch ensures observability.  
+S3 + CloudFront handle static content delivery globally.
+
+---
+
+## 🖼 Architecture Diagram
+![Architecture Diagram](diagram/architecture.png)
+
+

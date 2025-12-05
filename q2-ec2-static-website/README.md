@@ -1,1 +1,34 @@
-I deployed a Free Tier t2.micro EC2 instance in one of the public subnets created earlier. A security group was configured to allow HTTP (port 80) from the internet and SSH from a restricted CIDR. During instance boot, a user data script installs Nginx, updates the system, and places a static HTML resume page under /usr/share/nginx/html/index.html. The instance has a public IP so the site is directly reachable over port 80. For basic hardening, I limit SSH access, apply OS updates, disable root login over SSH (via default Amazon Linux config), and keep only necessary ports open.
+# Q2 – EC2 Static Resume Website  
+**Created by: Anshul Sharma**
+
+---
+
+## 📌 Approach Summary
+A free-tier EC2 instance (t2.micro) was launched in a **public subnet**.  
+Nginx was installed using a `user_data.sh` script, and my resume HTML file was hosted inside `/usr/share/nginx/html/`.  
+Security Group allowed HTTP (80) and limited SSH.  
+The website is accessible through EC2 public IP and DNS.
+
+---
+
+## 📸 Screenshots
+
+### ✔ EC2 Instance
+![EC2 Screenshot](screenshots/ec2.png)
+
+### ✔ Security Group
+![SG Screenshot](screenshots/security-group.png)
+
+### ✔ Website Output
+![Website Screenshot](screenshots/website.png)
+
+---
+
+## 🧩 Terraform + User Data Script  
+GitHub:  
+*https://github.com/AnshulSharma2005/aws-assessment-anshul-sharma/q2-ec2-static-website*
+
+---
+
+## 🌐 Public Website
+http://13.232.61.108/

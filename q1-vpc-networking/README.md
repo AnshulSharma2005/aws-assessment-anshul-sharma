@@ -1,50 +1,52 @@
-# ✅ Q1 – AWS VPC Networking & Subnetting (Terraform)
+# Q1 – AWS VPC Networking Setup  
+**Created by: Anshul Sharma**
 
 ---
 
-## 📌 Overview
-This task demonstrates the design and implementation of a secure and scalable AWS networking architecture using Terraform. A custom VPC was created with public and private subnets, an Internet Gateway for inbound access, and a NAT Gateway for secure outbound internet access from private subnets. All resources follow the mandatory naming convention with the prefix `Anshul_Sharma_`.
+## 📌 **Architecture Summary**
+I designed a custom VPC with CIDR `10.0.0.0/16` and divided it into **2 public** and **2 private** subnets across two Availability Zones for high availability.  
+An Internet Gateway enables public traffic, and a NAT Gateway in a public subnet allows **secure outbound internet access** for private subnets.  
+Separate route tables were configured for correct routing.  
+All resources were created using Terraform with the prefix **Anshul_Sharma_***.
 
 ---
 
-## 🛠️ AWS Services Used
-- Amazon VPC  
-- Public & Private Subnets  
-- Internet Gateway (IGW)  
-- NAT Gateway  
-- Route Tables  
-- Elastic IP  
-- Terraform (Infrastructure as Code)
-
----
-
-## 🧠 Architecture Design Explanation (4–6 lines)
-
-A custom VPC with a `/16` CIDR block was created and divided into two public and two private subnets across two Availability Zones for high availability. The public subnets host internet-facing resources and the NAT Gateway. An Internet Gateway provides inbound and outbound access for public subnets. The private subnets route outbound internet traffic securely through the NAT Gateway. Separate route tables were created to enforce controlled routing.
-
----
-
-## 🌐 Network CIDR Allocation
-
-| Resource | CIDR Block |
-|----------|------------|
+## 🔐 **CIDR Ranges Used**
+| Component | CIDR |
+|----------|------|
 | VPC | `10.0.0.0/16` |
 | Public Subnet A | `10.0.1.0/24` |
 | Public Subnet B | `10.0.2.0/24` |
 | Private Subnet A | `10.0.11.0/24` |
 | Private Subnet B | `10.0.12.0/24` |
 
-### ✅ CIDR Justification:
-- `/16` allows up to **65,536 IPs** for scalability.
-- Each `/24` subnet supports **256 IPs**, ideal for workload separation.
-- Public subnets are used for internet-facing traffic.
-- Private subnets are isolated and use NAT for outbound access only.
+Reason: These ranges provide clean separation and enough IPs for scaling.
 
 ---
 
-## ✅ Terraform Deployment Outputs (Proof)
+## 📸 **Screenshots**
 
-```text
+### ✔ VPC
+![VPC Screenshot](screenshots/vpc.png)
+
+### ✔ Subnets
+![Subnets Screenshot](screenshots/subnets.png)
+
+### ✔ Route Tables
+![Route Tables Screenshot](screenshots/route-tables.png)
+
+### ✔ NAT Gateway + IGW
+![NAT Screenshot](screenshots/nat.png)  
+![IGW Screenshot](screenshots/igw.png)
+
+---
+
+## 🧩 **Terraform Code**
+Link: *https://github.com/AnshulSharma2005/aws-assessment-anshul-sharma/q1-vpc-networking*
+
+---
+
+## **Output**
 VPC ID:
 vpc-0f50c694b5d9a253b
 

@@ -1,3 +1,33 @@
-Cost monitoring is critical for beginners because it’s easy to leave resources running (like NAT Gateways, RDS, or large EC2 instances) and accidentally go beyond the Free Tier. A CloudWatch billing alarm at a low threshold (e.g., near ₹100 equivalent in USD) gives an early signal if costs start to grow. Sudden bill spikes often come from continuously running non-free-tier instances, high data transfer (out to the internet), provisioned databases or EBS volumes, forgetting load balancers/NAT gateways, or enabling expensive managed services (e.g., high-volume S3 PUT/GET, CloudWatch logs, or third-party marketplace AMIs). Having alarms and free tier usage alerts helps catch these issues early before they become a big bill.
+# Q4 – AWS Billing & Free Tier Monitoring  
+**Created by: Anshul Sharma**
 
-Note: Billing metrics and budgets are in USD, not INR. You’ll approximate ₹100 into USD in the threshold (for example ~1.2–1.5 USD depending on rate).
+---
+
+## 📌 Why Cost Monitoring?
+Beginners often leave resources running, causing unexpected charges.  
+Billing alarms prevent surprises by notifying when spending exceeds a threshold.  
+Free Tier usage alerts help identify when you are close to crossing 12-month limits.  
+Sudden AWS bill increases happen due to:  
+- EC2 running 24×7  
+- NAT Gateways  
+- Load Balancers  
+- Large S3 usage  
+- Backup or snapshot accumulation
+
+---
+
+## 📸 Screenshots
+
+### ✔ Billing Alarm (₹100 Alert)
+![Billing Alarm Screenshot](screenshots/billing-alarm.png)
+
+### ✔ Free Tier Alerts
+![Free Tier Alerts Screenshot](screenshots/free-tier.png)
+
+---
+
+## 📝 Steps performed
+1. Enabled billing alerts from Billing Preferences  
+2. Created CloudWatch Billing Alarm  
+3. Set threshold = ₹100  
+4. Enabled free-tier usage alerts  
