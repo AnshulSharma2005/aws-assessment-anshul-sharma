@@ -17,8 +17,7 @@ All AWS resources were created using the prefix **Anshul_Sharma_*** as required.
 | **Q4 – Billing Alarms & Free Tier Monitoring** | [q4-billing-alerts](https://github.com/<YOUR_GITHUB_USERNAME>/aws-assessment-anshul-sharma/tree/master/q4-billing-alerts) |
 | **Q5 – AWS Scalable Architecture Diagram** | [q5-architecture-diagram](https://github.com/<YOUR_GITHUB_USERNAME>/aws-assessment-anshul-sharma/tree/master/q5-architecture-diagram) |
 
-🔁 **Remember to replace `<YOUR_GITHUB_USERNAME>` with your actual GitHub username:  
-`AnshulSharma2005`**
+
 
 ---
 
